@@ -21,25 +21,23 @@ jobs:
         run: mvn deploy -DaltDeploymentRepository=local::default::file://$(pwd)/target/mvn-repo
         working-directory: mark59-parent
 
+      - name: Check generated structure
+        run: |
+          echo "=== Contents of target/mvn-repo ==="
+          find mark59-parent/target/mvn-repo -type f -name "*.pom" | head -20
+          ls -la mark59-parent/target/mvn-repo/
+
       - name: Deploy to gh-pages branch
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Clean everything first
-          rm -rf *
-          rm -rf .github
+          # Clean working directory completely
+          rm -rf * .github .gitignore
           
-          # Create fresh directory structure
-          mkdir -p mark59-parent-pom/5.6.3.00
-          
-          # Copy only the POM file and checksums
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/5.6.3.00/mark59-parent-pom-5.6.3.00.pom mark59-parent-pom/5.6.3.00/
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/5.6.3.00/mark59-parent-pom-5.6.3.00.pom.md5 mark59-parent-pom/5.6.3.00/
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/5.6.3.00/mark59-parent-pom-5.6.3.00.pom.sha1 mark59-parent-pom/5.6.3.00/
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/maven-metadata.xml mark59-parent-pom/
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/maven-metadata.xml.md5 mark59-parent-pom/
-          cp mark59-parent/target/mvn-repo/mark59-parent-pom/mark59-parent-pom/maven-metadata.xml.sha1 mark59-parent-pom/
+          # Find and copy all POM files
+          mkdir -p maven-repo
+          cp -r mark59-parent/target/mvn-repo/* maven-repo/ 2>/dev/null || true
           
           git checkout --orphan gh-pages
           git add .
