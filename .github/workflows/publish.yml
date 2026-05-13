@@ -23,8 +23,7 @@ jobs:
           java-version: 17
 
       - name: Deploy to local repo
-        run: |
-          mvn deploy -DaltDeploymentRepository=local::default::file://$(pwd)/target/mvn-repo
+        run: mvn deploy -DaltDeploymentRepository=local::default::file://$(pwd)/target/mvn-repo
         working-directory: mark59-parent
 
       - name: Upload Pages artifact
