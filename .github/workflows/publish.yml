@@ -11,6 +11,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-java@v4
         with:
@@ -21,25 +23,26 @@ jobs:
         run: mvn deploy -DaltDeploymentRepository=local::default::file://$(pwd)/target/mvn-repo
         working-directory: mark59-parent
 
-      - name: Check generated structure
-        run: |
-          echo "=== Contents of target/mvn-repo ==="
-          find mark59-parent/target/mvn-repo -type f -name "*.pom" | head -20
-          ls -la mark59-parent/target/mvn-repo/
-
       - name: Deploy to gh-pages branch
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Clean working directory completely
-          rm -rf * .github .gitignore
+          # Create a temporary directory for the deploy content
+          mkdir -p /tmp/deploy
+          cp -r mark59-parent/target/mvn-repo/* /tmp/deploy/ 2>/dev/null || true
           
-          # Find and copy all POM files
-          mkdir -p maven-repo
-          cp -r mark59-parent/target/mvn-repo/* maven-repo/ 2>/dev/null || true
+          # Create or checkout gh-pages
+          git fetch origin gh-pages 2>/dev/null || echo "Branch doesn't exist"
+          git checkout -B gh-pages origin/gh-pages 2>/dev/null || git checkout --orphan gh-pages
           
-          git checkout --orphan gh-pages
+          # Remove all existing content
+          git rm -rf . 2>/dev/null || true
+          
+          # Copy in the new content
+          cp -r /tmp/deploy/* . 2>/dev/null || true
+          
+          # Commit and push
           git add .
-          git commit -m "Publish parent POM to GitHub Pages"
+          git commit -m "Publish parent POM to GitHub Pages" || echo "No changes"
           git push -u origin gh-pages --force
