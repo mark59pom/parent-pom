@@ -7,13 +7,8 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     permissions:
-      pages: write
-      id-token: write
-      contents: read
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -26,11 +21,13 @@ jobs:
         run: mvn deploy -DaltDeploymentRepository=local::default::file://$(pwd)/target/mvn-repo
         working-directory: mark59-parent
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: mark59-parent/target/mvn-repo
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to gh-pages branch
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git checkout gh-pages || git checkout --orphan gh-pages
+          git rm -rf . || true
+          cp -r mark59-parent/target/mvn-repo/* .
+          git add .
+          git commit -m "Publish parent POM to GitHub Pages" || exit 0
+          git push origin gh-pages
