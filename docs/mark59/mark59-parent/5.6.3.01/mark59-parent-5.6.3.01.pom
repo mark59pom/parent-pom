@@ -199,6 +199,12 @@
             <groupId>com.mark59</groupId>
             <artifactId>mark59-scripting</artifactId>
             <version>${mark59.version}</version>
+	   <exclusions>
+	       <exclusion>
+	           <groupId>org.seleniumhq.selenium</groupId>
+		   <artifactId>*</artifactId>
+	       </exclusion>
+	    </exclusions>
         </dependency>
 
         <dependency>
