@@ -22,6 +22,7 @@
         <mark59.version>6.5</mark59.version>
         <log4j.version>2.25.4</log4j.version>
         <batik.version>1.17</batik.version>
+        <datafaker.version>2.5.4</datafaker.version>
     </properties>
 
     <dependencies>
@@ -237,7 +238,7 @@
         <dependency>
             <groupId>net.datafaker</groupId>
             <artifactId>datafaker</artifactId>
-            <version>2.5.4</version>
+            <version>${datafaker.version}</version>
         </dependency>
 
     </dependencies>
