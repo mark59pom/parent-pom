@@ -1,8 +1,116 @@
 <!doctype html>
 <html>
-  <head><meta charset="utf-8"><title>svp-maven-repo</title></head>
+  <head><meta charset="utf-8"><title>Mark59 Parent Pom Repo</title></head>
   <body>
-    <h1>svp-maven-repo</h1>
-    <p>Maven repository for Mark59 artifacts.</p>
+    <h1>Mark59 Parent Pom Repo</h1>
+
+    <h2>Purpose</h2>
+    <p>
+      This repository hosts Maven Parent POMs for Mark59-based UI scripting projects. By declaring one of
+      these POMs as the <code>&lt;parent&gt;</code> in a consuming project, all common dependency versions,
+      repository locations, and build plugin configuration are inherited automatically. This eliminates
+      duplication and centralises maintenance across Mark59 script projects.
+    </p>
+
+    <h2>Links</h2>
+    <ul>
+      <li>GitHub Repository (source artefacts): <a href="https://github.com/mark59pom/parent-pom">https://github.com/mark59pom/parent-pom</a></li>
+      <li>Maven-structured repo (for inclusion in a pom.xml): <a href="https://mark59pom.github.io/parent-pom/">https://mark59pom.github.io/parent-pom/</a></li>
+    </ul>
+
+    <h2>Available Parent POMs</h2>
+    <p>
+      All artefacts share <code>groupId: mark59</code> and <code>artifactId: mark59-parent</code>.
+      The version number follows the pattern <code>{jmeter-version}.{revision}</code>, aligning the
+      Parent POM with the JMeter release it targets.
+    </p>
+    <table border="1" cellpadding="4" cellspacing="0">
+      <thead>
+        <tr><th>Version</th><th>JMeter</th><th>Mark59</th><th>Java</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>5.6.3.00</td><td>5.6.3</td><td>6.5</td><td>17</td></tr>
+        <tr><td>5.6.3.01</td><td>5.6.3</td><td>6.5</td><td>17</td></tr>
+        <tr><td>6.0.0.00</td><td>6.0.0-SNAPSHOT</td><td>6.6</td><td>17</td></tr>
+        <tr><td>6.0.0.01</td><td>6.0.0-SNAPSHOT</td><td>6.6</td><td>17</td></tr>
+      </tbody>
+    </table>
+
+    <h2>What Each Parent POM Provides</h2>
+    <p>Inheriting from <code>mark59-parent</code> gives a consuming project:</p>
+    <ul>
+      <li><strong>Java 17</strong> compiler source and target settings.</li>
+      <li><strong>Centralised dependency versions</strong> managed via properties (JMeter, Mark59, Log4j 2, DataFaker).</li>
+      <li>
+        <strong>Pre-configured dependencies</strong> (all with <code>provided</code> scope where supplied by JMeter at runtime):
+        <ul>
+          <li><code>mark59-scripting</code> (Selenium transitive dependency excluded, supporting Playwright-based scripts)</li>
+          <li><code>mark59-datahunter-api</code></li>
+          <li><code>ApacheJMeter_java</code></li>
+          <li>Log4j 2 (core, api, 1.2 bridge, SLF4J impl)</li>
+          <li><code>datafaker</code> (test data generation)</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Build plugin configuration</strong>:
+        <ul>
+          <li><code>maven-compiler-plugin</code></li>
+          <li><code>maven-jar-plugin</code> — produces a JAR with a classpath manifest pointing to a <code>*-dependencies</code> folder.</li>
+          <li><code>maven-dependency-plugin</code> — copies all non-provided runtime dependencies into <code>target/{artifactId}-dependencies/</code> at package time, ready for deployment into a JMeter lib/ext directory.</li>
+        </ul>
+      </li>
+      <li>
+        <strong>Repository declarations</strong> for resolving Mark59 artefacts:
+        <ul>
+          <li><a href="https://mark-5-9.github.io/mark59-pages">https://mark-5-9.github.io/mark59-pages</a> — Mark59 release artefacts</li>
+          <li><a href="https://repository.apache.org/content/repositories/snapshots/">https://repository.apache.org/content/repositories/snapshots/</a> — Apache snapshots (required by the 6.x JMeter SNAPSHOT builds)</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h2>Using a Parent POM in Your Project</h2>
+    <p>
+      Add the following <code>&lt;parent&gt;</code> block to your <code>pom.xml</code>, along with a
+      repository entry so Maven can locate the parent POM itself before it is resolved:
+    </p>
+    <pre><code>&lt;parent&gt;
+    &lt;groupId&gt;mark59&lt;/groupId&gt;
+    &lt;artifactId&gt;mark59-parent&lt;/artifactId&gt;
+    &lt;version&gt;6.0.0.01&lt;/version&gt;
+    &lt;relativePath /&gt;
+&lt;/parent&gt;
+
+&lt;repositories&gt;
+    &lt;repository&gt;
+        &lt;id&gt;parent-pom-github&lt;/id&gt;
+        &lt;url&gt;https://mark59pom.github.io/parent-pom/&lt;/url&gt;
+        &lt;releases&gt;
+            &lt;checksumPolicy&gt;ignore&lt;/checksumPolicy&gt;
+        &lt;/releases&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;</code></pre>
+    <p>
+      The consuming project then only needs to declare any <em>additional</em> dependencies specific to
+      its own test scripts. All Mark59 and JMeter dependencies are already inherited.
+    </p>
+
+    <h2>Repository Structure</h2>
+    <p>
+      The Maven repository is served from the <code>docs/</code> folder of the GitHub source repository
+      via GitHub Pages. The directory layout follows the standard Maven 2 repository convention:
+    </p>
+    <pre><code>docs/
+  mark59/
+    mark59-parent/
+      maven-metadata.xml
+      5.6.3.00/
+      5.6.3.01/
+      6.0.0.00/
+      6.0.0.01/</code></pre>
+    <p>
+      Each version folder contains the <code>.pom</code> file for that release. No compiled JAR is
+      published because a Parent POM has <code>&lt;packaging&gt;pom&lt;/packaging&gt;</code>.
+    </p>
+
   </body>
 </html>
