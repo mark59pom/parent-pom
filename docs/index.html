@@ -49,7 +49,7 @@
           <li><code>ApacheJMeter_java</code></li>
           <li>Log4j 2 (core, api, 1.2 bridge, SLF4J impl)</li>
           <li><code>datafaker</code> (test data generation)</li>
-          <li>Additional dependencies may be added over time to mitigate vunerabilities (should be indicated as such)</li>		  
+          <li>Additional dependencies may be added over time to mitigate vunerabilities (should be indicated as such)</li>
         </ul>
       </li>
       <li>
@@ -111,6 +111,49 @@
     <p>
       Each version folder contains the <code>.pom</code> file for that release. No compiled JAR is
       published because a Parent POM has <code>&lt;packaging&gt;pom&lt;/packaging&gt;</code>.
+    </p>
+
+    <h2>Updating a Published Parent POM</h2>
+    <p>
+      Maven treats a published release as immutable — once a version (e.g. <code>6.0.0.01</code>) has
+      been downloaded, Maven caches it in the local repository and will not re-fetch it, even if the
+      file on the server changes. If you need to correct a published POM, choose one of the two
+      options below.
+    </p>
+
+    <h3>Option 1 — Delete the cached POM (quick fix for the current machine)</h3>
+    <p>
+      <strong>When to use:</strong> you have already pushed a corrected POM to GitHub Pages under the
+      <em>same</em> version number and you just need Maven to pick it up on the next build — on your
+      own machine, or on a CI agent that has the stale entry.
+    </p>
+    <p>Delete the cached version folder from the local Maven repository, then run your build normally.
+       Maven will treat the artefact as missing and re-download it from GitHub Pages.</p>
+    <p>On Windows (PowerShell):</p>
+    <pre><code>Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\repository\mark59\mark59-parent\6.0.0.01"</code></pre>
+    <p>On Linux / macOS:</p>
+    <pre><code>rm -rf ~/.m2/repository/mark59/mark59-parent/6.0.0.01</code></pre>
+    <p>
+      <strong>Limitation:</strong> any other developer or build agent that already cached the old POM
+      will also need to delete it manually. This approach does not scale beyond a single machine.
+    </p>
+
+    <h3>Option 2 — Increment the version number (recommended long-term practice)</h3>
+    <p>
+      <strong>When to use:</strong> the change is meaningful enough that consumers should be able to
+      choose when to adopt it, or you want all developers and CI systems to pick it up automatically
+      without manual cache-busting.
+    </p>
+    <ol>
+      <li>Bump the version in the POM (e.g. <code>6.0.0.01</code> → <code>6.0.0.02</code>).</li>
+      <li>Publish the new version folder to <code>docs/mark59/mark59-parent/6.0.0.02/</code>.</li>
+      <li>Update <code>maven-metadata.xml</code> to list the new version and set it as
+          <code>&lt;release&gt;</code> / <code>&lt;latest&gt;</code>.</li>
+      <li>Instruct consumers to update their <code>&lt;parent&gt;</code> version accordingly.</li>
+    </ol>
+    <p>
+      Because the new version has never been cached, Maven downloads it fresh on first use — no manual
+      cache deletion is required on any machine.
     </p>
 
   </body>
