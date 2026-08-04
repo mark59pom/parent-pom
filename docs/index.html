@@ -33,6 +33,9 @@
         <tr><td>5.6.3.01</td><td>5.6.3</td><td>6.5</td><td>17</td></tr>
         <tr><td>6.0.0.00</td><td>6.0.0-SNAPSHOT</td><td>6.6</td><td>17</td></tr>
         <tr><td>6.0.0.01</td><td>6.0.0-SNAPSHOT</td><td>6.6</td><td>17</td></tr>
+        <tr><td>6.6.0.00</td><td>5.6.3</td><td>6.6</td><td>17</td></tr>
+        <tr><td>6.6.0.01</td><td>5.6.3</td><td>6.6</td><td>17</td></tr>
+        <tr><td>6.6.0.02</td><td>5.6.3</td><td>6.6</td><td>17</td></tr>
       </tbody>
     </table>
 
@@ -40,7 +43,7 @@
     <p>Inheriting from <code>mark59-parent</code> gives a consuming project:</p>
     <ul>
       <li><strong>Java 17</strong> compiler source and target settings.</li>
-      <li><strong>Centralised dependency versions</strong> managed via properties (JMeter, Mark59, Log4j 2, DataFaker).</li>
+      <li><strong>Centralised dependency versions</strong> managed via properties (JMeter, Mark59, Log4j 2, Jackson, Batik, DataFaker).</li>
       <li>
         <strong>Pre-configured dependencies</strong> (all with <code>provided</code> scope where supplied by JMeter at runtime):
         <ul>
@@ -48,8 +51,11 @@
           <li><code>mark59-datahunter-api</code></li>
           <li><code>ApacheJMeter_java</code></li>
           <li>Log4j 2 (core, api, 1.2 bridge, SLF4J impl)</li>
+          <li>Jackson (core, databind, annotations) — added from 6.6.x; pinned to override transitive versions</li>
+          <li>Batik (multiple modules) — added from 6.6.x, provided scope</li>
+          <li><code>xstream</code> — provided scope</li>
           <li><code>datafaker</code> (test data generation)</li>
-          <li>Additional dependencies may be added over time to mitigate vunerabilities (should be indicated as such)</li>
+          <li>Additional dependencies may be added over time to mitigate vulnerabilities (should be indicated as such)</li>
         </ul>
       </li>
       <li>
@@ -63,8 +69,8 @@
       <li>
         <strong>Repository declarations</strong> for resolving Mark59 artefacts:
         <ul>
-          <li><a href="https://mark-5-9.github.io/mark59-pages">https://mark-5-9.github.io/mark59-pages</a> — Mark59 release artefacts</li>
-          <li><a href="https://repository.apache.org/content/repositories/snapshots/">https://repository.apache.org/content/repositories/snapshots/</a> — Apache snapshots (required by the 6.x JMeter SNAPSHOT builds)</li>
+          <li>From 6.6.0.01 onwards, all artefacts are sourced from Maven Central — no explicit repository declaration is needed in the consuming project.</li>
+          <li>Earlier versions (up to 6.6.0.00) declare <a href="https://mark-5-9.github.io/mark59-pages">https://mark-5-9.github.io/mark59-pages</a> for Mark59 release artefacts and the Apache snapshots repository for JMeter SNAPSHOT builds.</li>
         </ul>
       </li>
     </ul>
@@ -77,7 +83,7 @@
     <pre><code>&lt;parent&gt;
     &lt;groupId&gt;mark59&lt;/groupId&gt;
     &lt;artifactId&gt;mark59-parent&lt;/artifactId&gt;
-    &lt;version&gt;5.6.3.00&lt;/version&gt;
+    &lt;version&gt;6.6.0.02&lt;/version&gt;
     &lt;relativePath /&gt;
 &lt;/parent&gt;
 
@@ -107,7 +113,10 @@
       5.6.3.00/
       5.6.3.01/
       6.0.0.00/
-      6.0.0.01/</code></pre>
+      6.0.0.01/
+      6.6.0.00/
+      6.6.0.01/
+      6.6.0.02/</code></pre>
     <p>
       Each version folder contains the <code>.pom</code> file for that release. No compiled JAR is
       published because a Parent POM has <code>&lt;packaging&gt;pom&lt;/packaging&gt;</code>.
@@ -130,9 +139,9 @@
     <p>Delete the cached version folder from the local Maven repository, then run your build normally.
        Maven will treat the artefact as missing and re-download it from GitHub Pages.</p>
     <p>On Windows (PowerShell):</p>
-    <pre><code>Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\repository\mark59\mark59-parent\6.0.0.01"</code></pre>
+    <pre><code>Remove-Item -Recurse -Force "$env:USERPROFILE\.m2\repository\mark59\mark59-parent\6.6.0.02"</code></pre>
     <p>On Linux / macOS:</p>
-    <pre><code>rm -rf ~/.m2/repository/mark59/mark59-parent/6.0.0.01</code></pre>
+    <pre><code>rm -rf ~/.m2/repository/mark59/mark59-parent/6.6.0.02</code></pre>
     <p>
       <strong>Limitation:</strong> any other developer or build agent that already cached the old POM
       will also need to delete it manually. This approach does not scale beyond a single machine.
@@ -145,8 +154,8 @@
       without manual cache-busting.
     </p>
     <ol>
-      <li>Bump the version in the POM (e.g. <code>6.0.0.01</code> → <code>6.0.0.02</code>).</li>
-      <li>Publish the new version folder to <code>docs/mark59/mark59-parent/6.0.0.02/</code>.</li>
+      <li>Bump the version in the POM (e.g. <code>6.6.0.02</code> → <code>6.6.0.03</code>).</li>
+      <li>Publish the new version folder to <code>docs/mark59/mark59-parent/6.6.0.03/</code>.</li>
       <li>Update <code>maven-metadata.xml</code> to list the new version and set it as
           <code>&lt;release&gt;</code> / <code>&lt;latest&gt;</code>.</li>
       <li>Instruct consumers to update their <code>&lt;parent&gt;</code> version accordingly.</li>
