@@ -24,6 +24,8 @@
         <log4j.version>2.25.5</log4j.version>
         <batik.version>1.17</batik.version>
         <datafaker.version>2.5.4</datafaker.version>
+        <freemarker.version>2.3.35</freemarker.version>
+        <jsoup.version>1.23.1</jsoup.version>
     </properties>
 
         <!-- we are pointing to Maven Central 
@@ -306,6 +308,20 @@
                     <artifactId>tika-parsers-standard-package</artifactId>
                 </exclusion>
             </exclusions>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
             <scope>provided</scope>
         </dependency>
 
