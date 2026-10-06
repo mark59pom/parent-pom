@@ -20,12 +20,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jmeter.version>5.6.3</jmeter.version>
         <mark59.version>6.6</mark59.version>
-        <jackson.version>2.18.10</jackson.version>
+        <jackson.version>2.18.11</jackson.version>
         <log4j.version>2.25.5</log4j.version>
         <batik.version>1.17</batik.version>
         <datafaker.version>2.5.4</datafaker.version>
         <freemarker.version>2.3.35</freemarker.version>
-        <jsoup.version>1.23.1</jsoup.version>
+        <jsoup.version>1.23.2</jsoup.version>
     </properties>
 
         <!-- we are pointing to Maven Central 
